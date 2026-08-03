@@ -5,13 +5,7 @@ const DEFAULT_TIMEOUT = 10_000;
 const DEFAULT_MAX_RETRIES = 3;
 const RETRY_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-function isRetryable(status: number): boolean {
-  return RETRY_STATUS_CODES.has(status);
-}
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 export class HiveCDNHttpClient {
   private readonly baseUrl: string;
@@ -53,18 +47,15 @@ export class HiveCDNHttpClient {
         clearTimeout(timer);
 
         if (!res.ok) {
-          if (isRetryable(res.status) && attempt < this.maxRetries) {
+          if (RETRY_STATUS_CODES.has(res.status) && attempt < this.maxRetries) {
             const backoff = Math.min(1000 * 2 ** attempt + Math.random() * 200, 30_000);
             await sleep(backoff);
             attempt++;
             continue;
           }
-
-          const payload = await res.json().catch(() => ({}));
-          const err = new Error(
-            (payload as { message?: string }).message ?? `HTTP ${res.status}`,
-          ) as HiveCDNError;
-          err.code = (payload as { code?: string }).code ?? 'API_ERROR';
+          const payload = await res.json().catch(() => ({})) as Record<string, unknown>;
+          const err = new Error(payload['message'] as string ?? `HTTP ${res.status}`) as HiveCDNError;
+          err.code = payload['code'] as string ?? 'API_ERROR';
           err.status = res.status;
           err.requestId = res.headers.get('X-Request-ID') ?? undefined;
           throw err;
@@ -74,9 +65,9 @@ export class HiveCDNHttpClient {
       } catch (err) {
         clearTimeout(timer);
         if ((err as Error).name === 'AbortError') {
-          const timeoutErr = new Error(`Request to ${url} timed out after ${this.timeout}ms`) as HiveCDNError;
-          timeoutErr.code = 'REQUEST_TIMEOUT';
-          throw timeoutErr;
+          const e = new Error(`Request timed out after ${this.timeout}ms`) as HiveCDNError;
+          e.code = 'REQUEST_TIMEOUT';
+          throw e;
         }
         throw err;
       }
