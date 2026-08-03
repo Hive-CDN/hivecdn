@@ -1,0 +1,30 @@
+{
+  "name": "@hivecdn/sdk",
+  "version": "2.4.1",
+  "description": "Official HiveCDN JavaScript/TypeScript SDK",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": ["cdn", "hivecdn", "edge", "cache", "content-delivery"],
+  "license": "MIT",
+  "dependencies": { "cross-fetch": "^4.0.0" },
+  "devDependencies": {
+    "tsup": "^8.1.0",
+    "vitest": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0"
+  }
+}
