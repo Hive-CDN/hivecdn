@@ -1,0 +1,29 @@
+{
+  "name": "@hivecdn/cli",
+  "version": "2.4.1",
+  "description": "HiveCDN command-line interface",
+  "bin": { "hivecdn": "./dist/index.js", "hcdn": "./dist/index.js" },
+  "main": "./dist/index.js",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts --sourcemap",
+    "dev": "tsup src/index.ts --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["cdn", "hivecdn", "cli"],
+  "license": "MIT",
+  "dependencies": {
+    "@hivecdn/sdk": "workspace:*",
+    "commander": "^12.1.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "enquirer": "^2.4.1",
+    "conf": "^12.0.0",
+    "cli-table3": "^0.6.4"
+  },
+  "devDependencies": {
+    "tsup": "^8.1.0",
+    "@types/node": "^20.14.2"
+  }
+}
