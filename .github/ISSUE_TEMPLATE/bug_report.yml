@@ -1,0 +1,31 @@
+name: Bug Report
+description: File a bug
+labels: [bug, needs-triage]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: SDK / CLI Version
+      placeholder: "2.4.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected Package
+      options: ["@hivecdn/sdk", "@hivecdn/cli", "Platform", "Other"]
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      render: typescript
+    validations:
+      required: true
