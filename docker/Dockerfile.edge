@@ -1,0 +1,17 @@
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json turbo.json ./
+COPY packages/sdk/package.json packages/sdk/
+RUN npm ci --workspace=packages/sdk
+COPY packages/sdk ./packages/sdk
+RUN npm run build --workspace=packages/sdk
+
+FROM node:20-alpine AS runtime
+RUN addgroup -S hivecdn && adduser -S edge -G hivecdn
+WORKDIR /app
+COPY --from=builder /app/packages/sdk/dist ./sdk/dist
+ENV NODE_ENV=production
+EXPOSE 8080
+USER edge
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:8080/healthz || exit 1
+CMD ["node", "sdk/dist/index.js"]
